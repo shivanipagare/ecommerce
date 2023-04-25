@@ -1,12 +1,34 @@
 import React from 'react'
 import './styles/Subcategory.css';
 import { Table, Button, Form, Modal } from 'react-bootstrap';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
+import axios from 'axios';
+
 function Subcategory() {
+
+
     const [showupdate, setShowUpdate] = useState(false);
 
     const handleCloseUpdate = () => setShowUpdate(false);
     const handleShowUpdate = () => setShowUpdate(true);
+
+
+    //Get data
+const [subcategoryData, setSubcategoryData] = useState([])
+
+
+
+const getSubcategoryData = async()=>{
+    let subcategoryapi= await axios.get('http://localhost:5500/subcategory')
+   setSubcategoryData(subcategoryapi.data.response)
+    //console.log(subcategoryapi.data.response)
+
+}
+
+useEffect(()=>{
+    getSubcategoryData()
+},[])
+
     return (
         <div>
 
@@ -16,6 +38,7 @@ function Subcategory() {
 
 
                     <Form className='add-new'>
+                    <h3 className='heading'>Add New subcategory</h3>
                         <Form.Label for="category" >Category:</Form.Label>
                         <select id="category" name="category" style={{width:"100%"}}>
                             <option value="Electronics">Electronics</option>
@@ -41,7 +64,7 @@ function Subcategory() {
 
                             <thead style={{ backgroundColor: "#7CB9E8" }}>
                                 <tr style={{ width: "500px" }}>
-                                    <th style={{ padding: "15px" }} >Main Category</th>
+                                    <th style={{ padding: "15px" }} > CategoryId</th>
                                     <th style={{ padding: "15px" }} >Sub Category Id</th>
                                     <th style={{ padding: "15px" }} >Sub-Category Name</th>
                                     <th style={{ padding: "15px" }} >Added On</th>
@@ -51,16 +74,25 @@ function Subcategory() {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr style={{ width: "500px" }}>
-                                    <td style={{ padding: "15px" }}>Electronics</td>
-                                    <td style={{ padding: "15px" }}>e02</td>
-                                    <td style={{ padding: "15px" }}>mobile</td>
-                                    <td style={{ padding: "15px" }}>02-03-2023</td>
+
+                            {
+                                subcategoryData && subcategoryData.map((item,index)=>{
+                                    return(
+                                <tr key={index} style={{ width: "500px" }}>
+                                    <td style={{ padding: "15px" }}>{item.category_id}</td>
+                                    <td style={{ padding: "15px" }}>{item.subcategory_id}</td>
+                                    <td style={{ padding: "15px" }}>{item.subcategory_name}</td>
+                                    <td style={{ padding: "15px" }}><img src={`http://localhost:5500/${item.subcategory_image}` } style={{width:"100px",height:"100px"}}/></td>
                                     <td style={{ padding: "15px" }}>
                                         <Button variant="primary" onClick={handleShowUpdate}>Update</Button></td>
 
                                 </tr>
-                                <tr style={{ width: "500px" }}>
+                                    )
+                                }
+                              )
+
+                            }
+                                {/* <tr style={{ width: "500px" }}>
                                     <td style={{ padding: "15px" }}>cloth</td>
                                     <td style={{ padding: "15px" }}>e04</td>
                                     <td style={{ padding: "15px" }}>jeans</td>
@@ -96,7 +128,7 @@ function Subcategory() {
                                     <td style={{ padding: "15px" }}>
                                         <Button variant="primary" onClick={handleShowUpdate}>Update</Button></td>
 
-                                </tr>
+                                </tr> */}
                             </tbody>
                         </Table>
                     </div>
