@@ -6,7 +6,7 @@ import './Navbar.css';
 const Navbar = ()=>{
     return(
         <div>
-        <section className='navbar'>
+        <section className='navbar' >
         
             <div className="logo">Logo</div>
                 <div className="login">Welcome : Shivani</div>

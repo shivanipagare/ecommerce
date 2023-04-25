@@ -1,110 +1,137 @@
 import React from 'react'
 import './styles/Category.css';
 import { Table, Button, Form, Modal } from 'react-bootstrap';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 
-const Category = () =>{
+const Category = () => {
 
- ////////////////////////FOR ADD NEW DATA////////////////////////////////
+    //Get data
+    const [categoryData, setCategoryData] = useState([])
 
+    ////////////////////////FOR ADD NEW DATA////////////////////////////////
+    const [show, setShow] = useState(false);
 
- const [show, setShow] = useState(false);
-
- const handleClose = () => setShow(false);
- const handleShow = () => setShow(true);
-
-
-////////////////////////FOR  UPDATE DATA////////////////////////////////
-const [showupdate, setShowUpdate] = useState(false);
-
-const handleCloseUpdate = () => setShowUpdate(false);
-const handleShowUpdate = () => setShowUpdate(true);
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
 
 
-    return(
+    ////////////////////////FOR  UPDATE DATA////////////////////////////////
+    const [showupdate, setShowUpdate] = useState(false);
+
+    const handleCloseUpdate = () => setShowUpdate(false);
+    const handleShowUpdate = () => setShowUpdate(true);
+
+
+
+    //get data
+    const getCategory = async () => {
+        let categoryapi = await axios.get('http://localhost:5500/product')
+        setCategoryData(categoryapi.data.response)
+
+       // console.log(categoryapi.data.response)
+    }
+
+
+    useEffect(() => {
+        getCategory()
+    }, [])
+
+
+    //add new(post data)
+    const [category_id, setCategoryId] = useState('')
+    const [category_name, setCategoryName] = useState('')
+    const [category_image, setCategoryImage] = useState('')
+    const [gst, setGst] = useState('')
+
+    const handleImage = (e) => {
+        setCategoryImage(e.target.files[0])
+    }
+
+    const submitData = async (e) => {
+        e.preventDefault();
+        const formData = new FormData()
+        formData.append('category_id', category_id);
+        formData.append('category_name', category_name);
+        formData.append('category_image', category_image);
+        formData.append('gst', gst);
+
+        const configs = {
+            "content-Type": "multiple/form-data"
+        }
+        const apiData = await axios.post("http://localhost:5500/product", formData, configs)
+       // console.log(apiData, 'apidata')
+        setCategoryId('')
+        setCategoryName('')
+        setCategoryImage('')
+        setGst('')
+        handleClose()
+        getCategory()
+    }
+
+    return (
         <div>
-           <h1 style={{ textAlign: "center", margin: "5px 20px",color:"#00308F" }}>Category</h1>
+            <h1 style={{ textAlign: "center", margin: "5px 20px", color: "#00308F" }}>Category</h1>
             <section className='user'>
 
-                <Button variant="primary" className='add-button' style={{width:"200px", marginLeft:"50px"}} onClick={handleShow}>+Add New</Button>
+                <Button variant="primary" className='add-button' style={{ width: "200px", marginLeft: "50px" }} onClick={handleShow}>+Add New</Button>
 
-<div className="usertable">
-                <Table striped bordered hover size="sm" className='table' style={{alignItems:"center"}}>
+                <div className="usertable">
+                    <Table striped bordered hover size="sm" className='table' style={{ alignItems: "center" }}>
 
-                    <thead style={{ padding: "20px", backgroundColor:"#7CB9E8" }}>
-                        <tr>
-                            <th style={{ padding: "15px" }} >Category Id</th>
-                            <th style={{ padding: "15px" }} >Category Name</th>
-                            <th style={{ padding: "15px" }} >Add Date</th>
-                            <th style={{ padding: "15px" }} >Action</th>
-                            
+                        <thead style={{ padding: "20px", backgroundColor: "#7CB9E8" }}>
+                            <tr>
+                                <th style={{ padding: "15px" }} >Category Id</th>
+                                <th style={{ padding: "15px" }} >Category Name</th>
+                                <th style={{ padding: "15px" }} >category image</th>
+                                <th style={{ padding: "15px" }} >GST</th>
+                                <th style={{ padding: "15px" }} >Action</th>
 
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td style={{ padding: "15px" }}>e01</td>
-                            <td style={{ padding: "15px" }}>Shivani Pagare</td>
-                            <td style={{ padding: "15px" }}>21-10-2022</td>
-                            <td style={{ padding: "15px" }}>
-                                <Button variant="primary" onClick={handleShowUpdate}>Update</Button></td>
-                            
-                        </tr>
-                        <tr>
-                            <td style={{ padding: "15px" }}>e02</td>
-                            <td style={{ padding: "15px" }}>shreya singh</td>
-                            <td style={{ padding: "15px" }}>21-10-2022</td>
-                            <td style={{ padding: "15px" }}>
-                                <Button variant="primary" onClick={handleShowUpdate} >Update</Button></td>
-                         
-                        </tr>
-                        <tr>
-                            <td style={{ padding: "15px" }}>e03</td>
-                            <td style={{ padding: "15px" }} >Nidhi</td>
-                            <td style={{ padding: "15px" }}>21-10-2022</td>
-                            <td style={{ padding: "15px" }}>
-                                <Button variant="primary" onClick={handleShowUpdate}>Update</Button></td>
-                            
 
-                        </tr>
-                        <tr>
-                            <td style={{ padding: "15px" }}>e01</td>
-                            <td style={{ padding: "15px" }}>Shivani Pagare</td>
-                            <td style={{ padding: "15px" }}>21-10-2022</td>
-                            <td style={{ padding: "15px" }}>
-                                <Button variant="primary" onClick={handleShowUpdate}>Update</Button></td>
-                            
-                        </tr>
-                        <tr>
-                            <td style={{ padding: "15px" }}>e01</td>
-                            <td style={{ padding: "15px" }}>Shiva</td>
-                            <td style={{ padding: "15px" }}>21-10-2022</td>
-                            <td style={{ padding: "15px" }}>
-                                <Button variant="primary" onClick={handleShowUpdate}>Update</Button></td>
-                           
-                        </tr>
-                    </tbody>
-                </Table>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {
+                                categoryData && categoryData.map((item, index) => {
+                                    return (
+                                        <tr key={index}>
+                                            <td style={{ padding: "15px" }}>{item.category_id}</td>
+                                            <td style={{ padding: "15px" }}>{item.category_name}</td>
+                                            <td style={{ padding: "15px" }}><img src={`http://localhost:5500/${item.category_image}`} style={{ width: "50px", height: "50px" }} /></td>
+                                            <td style={{ padding: "15px" }}>{item.gst}</td>
+                                            <td style={{ padding: "15px" }}>
+                                                <Button variant="primary" onClick={handleShowUpdate}>Update</Button></td>
+
+                                        </tr>
+                                    )
+                                }
+                                )
+                            }
+                        </tbody>
+                    </Table>
                 </div>
             </section>
-            <Modal show={show} onHide={handleClose}>
+            <Modal show={show} onHide={handleClose} >
                 <Modal.Header closeButton>
                     <Modal.Title>Add New Category</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form>
                         <Form.Label>Category Id:</Form.Label><br />
-                        <Form.Control type="text" /><br />
+                        <Form.Control type="text" value={category_id} onChange={(e) => setCategoryId(e.target.value)} /><br />
                         <Form.Label>Category name:</Form.Label><br />
-                        <Form.Control type="text" /><br />
-                       
+                        <Form.Control type="text" value={category_name} onChange={(e) => setCategoryName(e.target.value)} /><br />
+                        <Form.Label>Category image:</Form.Label><br />
+                        <Form.Control type="file" onChange={handleImage} /><br />
+                        <Form.Label>GST:</Form.Label><br />
+                        <Form.Control type="text" value={gst} onChange={(e) => setGst(e.target.value)} /><br />
                     </Form></Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose}>
                         Close
                     </Button>
-                    <Button variant="primary" onClick={handleClose}>
-                        Save 
+                    <Button variant="primary" type="submit" onClick={submitData}>
+                        Save
                     </Button>
                 </Modal.Footer>
             </Modal>
@@ -121,7 +148,7 @@ const handleShowUpdate = () => setShowUpdate(true);
                         <Form.Control type="text" /><br />
                         <Form.Label>Category name:</Form.Label><br />
                         <Form.Control type="text" /><br />
-                       
+
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
@@ -129,11 +156,11 @@ const handleShowUpdate = () => setShowUpdate(true);
                         Close
                     </Button>
                     <Button variant="primary" onClick={handleCloseUpdate}>
-                       Update changes
+                        Update changes
                     </Button>
                 </Modal.Footer>
             </Modal>
-            </div>
+        </div>
     )
 }
 export default Category;
