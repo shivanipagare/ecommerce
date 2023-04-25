@@ -131,7 +131,7 @@ function Roles() {
                         Close
                     </Button>
                     <Button variant="primary" onClick={handleCloseUpdate}>
-                        Update changes
+                        Update 
                     </Button>
                 </Modal.Footer>
             </Modal>
